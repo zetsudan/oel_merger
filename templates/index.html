@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>oel_merger</title>
+  <title>OEL merger</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
   <link rel="stylesheet" href="/static/app.css">
 </head>
 <body>
   <main class="container">
     <hgroup>
-      <h1>oel_merger</h1>
-      <p>Интервалы: <strong>Edge Freq</strong> | <strong>Central Freq</strong> | <strong>Edge Freq</strong> • Шаг 0.0125 THz • Порт 9002</p>
+      <h1>OEL Merger</h1>
+      <p>Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Ipsum</p>
     </hgroup>
 
     {% if flash %}
@@ -19,12 +19,12 @@
     {% endif %}
 
     <article>
-      <h3>Добавить OEL</h3>
+      <h3>Body of programm</h3>
       <form action="/add_oel" method="post">
-        <label>Имя OEL
+        <label>OEL Name
           <input type="text" name="name" placeholder="PL-WAW-...-FSNONE" required>
         </label>
-        <label>Passband (через двоеточие «:»)
+        <label>Last Available Frequenct Range [Thz]
           <textarea name="passband" rows="3" placeholder="(191.325 - 191.3625):(192.7375 - 192.7500):(196.0625 - 196.1250)" required></textarea>
         </label>
         <div class="grid">
@@ -51,7 +51,7 @@
     </article>
     {% endif %}
 
-    <footer><small>© 2025 oel_merger • summary & chart</small></footer>
+    <footer><small>© kartemev</small></footer>
   </main>
 </body>
 </html>
