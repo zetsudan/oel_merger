@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>oel_merger — График Summary</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <style>#plot{width:100%;height:60vh}</style>
+</head>
+<body>
+  <main class="container">
+    <h2>График свободных слайсов (Summary ALL)</h2>
+    <div id="plot"></div>
+  </main>
+  <script>
+    const lowers = {{ lower_json | safe }};
+    const uppers = {{ upper_json | safe }};
+    const mask = {{ mask_json | safe }};
+    const step = {{ step }};
+    const colors = mask.map(m => m ? '#28a745' : '#dc3545');
+    const y = mask.map(_ => 1);
+    const custom = lowers.map((le,i)=>`${le.toFixed(5)}–${uppers[i].toFixed(5)} THz`);
+
+    Plotly.newPlot('plot', [{
+      x: lowers, y: y, type: 'bar', marker: {color: colors}, width: step*0.95,
+      customdata: custom.map((s,i)=>[s, mask[i]?'FREE':'IN USED']),
+      hovertemplate: 'Interval: %{customdata[0]}<br>Status: %{customdata[1]}<extra></extra>'
+    }], {
+      xaxis:{title:'Frequency [THz] (interval lower edge)'}, yaxis:{tickvals:[], range:[0,1.2]},
+      bargap:0.02, margin:{t:20,r:20,b:50,l:40}
+    }, {displaylogo:false, responsive:true});
+  </script>
+</body>
+</html>

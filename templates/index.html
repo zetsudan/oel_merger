@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>oel_merger</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <main class="container">
+    <hgroup>
+      <h1>oel_merger</h1>
+      <p>Интервалы: <strong>Edge Freq</strong> | <strong>Central Freq</strong> | <strong>Edge Freq</strong> • Шаг 0.0125 THz • Порт 9002</p>
+    </hgroup>
+
+    {% if flash %}
+    <p><span class="tag {{ 'ok' if flash.ok else 'bad' }}">{{ flash.msg }}</span></p>
+    {% endif %}
+
+    <article>
+      <h3>Добавить OEL</h3>
+      <form action="/add_oel" method="post">
+        <label>Имя OEL
+          <input type="text" name="name" placeholder="PL-WAW-...-FSNONE" required>
+        </label>
+        <label>Passband (через двоеточие «:»)
+          <textarea name="passband" rows="3" placeholder="(191.325 - 191.3625):(192.7375 - 192.7500):(196.0625 - 196.1250)" required></textarea>
+        </label>
+        <div class="grid">
+          <button type="submit">Добавить</button>
+          <a role="button" class="secondary" href="/reset">Сбросить список</a>
+          <a role="button" class="contrast" target="_blank" href="/summary">Открыть таблицу</a>
+          <a role="button" class="contrast" target="_blank" href="/chart">Показать график</a>
+          <a role="button" href="/download_excel">Скачать Excel</a>
+        </div>
+      </form>
+      <p class="mono">Добавлено OEL: {{ oels_len }} • Количество интервалов: {{ grid_size }}</p>
+    </article>
+
+    {% if oels_len %}
+    <article>
+      <details>
+        <summary>Текущие OEL</summary>
+        <ul>
+          {% for o in oels %}
+            <li><strong>{{ o.name }}</strong>: <span class="mono">{{ o.ranges }}</span></li>
+          {% endfor %}
+        </ul>
+      </details>
+    </article>
+    {% endif %}
+
+    <footer><small>© 2025 oel_merger • summary & chart</small></footer>
+  </main>
+</body>
+</html>

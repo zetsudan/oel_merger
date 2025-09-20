@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>oel_merger — Итоговая таблица</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <main class="container-fluid">
+    <h2>Итоговая таблица</h2>
+    <div class="table-wrap">
+      <table class="table-compact">
+        <thead>
+          <tr>
+            <th class="col-edge-start">Edge Freq (THz)</th>
+            <th class="col-central">Central Freq (THz)</th>
+            <th class="col-edge-end">Edge Freq (THz)</th>
+            {% for o in oels %}
+              <th style="white-space:normal;max-width:260px">{{ o.name }}</th>
+            {% endfor %}
+            <th>Summary (ALL)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for le in intervals %}
+            {% set idx = loop.index0 %}
+            <tr>
+              <td class="mono col-edge-start">{{ '%.5f'|format(le) }}</td>
+              <td class="mono col-central">{{ '%.5f'|format(le + STEP/2) }}</td>
+              <td class="mono col-edge-end">{{ '%.5f'|format(le + STEP) }}</td>
+              {% for j in range(oels_len) %}
+                {% set st = rows[idx][j] if oels_len else 'FREE' %}
+                <td><span class="tag {{ 'ok' if st=='FREE' else 'bad' }}">{{ st }}</span></td>
+              {% endfor %}
+              {% set s = 'FREE' if summary_mask[idx] else 'IN USED' %}
+              <td><span class="tag {{ 'ok' if s=='FREE' else 'bad' }}">{{ s }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>

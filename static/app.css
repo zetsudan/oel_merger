@@ -1,0 +1,12 @@
+
+.tag { padding: 0.1rem 0.4rem; border-radius: 6px; font-weight: 600; }
+.tag.ok { background: #28a745; color: #fff; }
+.tag.bad { background: #dc3545; color: #fff; }
+.table-wrap { width: 100%; overflow-x: auto; border: 1px solid rgba(255,255,255,.08); border-radius: 8px; }
+.table-compact { width: max-content; border-collapse: collapse; }
+.table-compact th, .table-compact td { padding: 2px 8px; line-height: 1.15; height: 22px; vertical-align: middle; white-space: nowrap; }
+.table-compact thead th { position: sticky; top: 0; background: var(--pico-background-color); z-index: 3; white-space: normal; }
+.col-edge-start, .col-central, .col-edge-end { position: sticky; left: 0; z-index: 2; background: var(--pico-background-color); min-width: 120px; max-width: 140px; width: 130px; }
+.col-central { left: 130px; } .col-edge-end { left: 260px; }
+tbody td.col-edge-start, tbody td.col-central, tbody td.col-edge-end { background: var(--pico-card-background-color, var(--pico-background-color)); }
+.table-compact tbody tr:nth-child(2n){ background: rgba(127,127,127,0.03); }
