@@ -1,17 +1,52 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>OEL merger</title>
+  <title>OEL Merger</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
   <link rel="stylesheet" href="/static/app.css">
+  <style>
+    /* Lightweight tooltip */
+    .help {
+      position: relative; cursor: help; display: inline-flex; align-items: center;
+      gap: .35rem; font-weight: 600;
+    }
+    .help .bubble {
+      position: absolute; inset-inline-start: 1.2rem; top: 100%;
+      transform: translateY(.4rem); opacity: 0; pointer-events: none;
+      background: var(--muted, #64748b); color: #fff; border-radius: .5rem;
+      padding: .6rem .75rem; width: min(42rem, 90vw); font-size: .9rem; line-height: 1.35;
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+      transition: opacity .15s ease, transform .15s ease;
+      z-index: 20;
+    }
+    .help:hover .bubble, .help:focus-within .bubble {
+      opacity: 1; transform: translateY(.2rem);
+    }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+    .tag.ok { background: #0f5132; color: #d1e7dd; padding: .2rem .45rem; border-radius: .4rem; }
+    .tag.bad { background: #5c1d1d; color: #f8d7da; padding: .2rem .45rem; border-radius: .4rem; }
+  </style>
 </head>
 <body>
   <main class="container">
+
     <hgroup>
-      <h1>OEL Merger</h1>
-      <p>Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Ipsum</p>
+      <h1 class="help" aria-describedby="how-works">
+        OEL Merger
+        <span class="bubble" id="how-works">
+          <strong>What this app does:</strong> you paste the last available frequency ranges (THz) for each OEL.
+          The app converts them into a 12.5&nbsp;GHz grid, merges overlaps, and shows:
+          a summary table (FREE / IN&nbsp;USE per slice), a colored chart, and lets you export to Excel.<br><br>
+          <strong>Quick steps:</strong>
+          1) Enter an OEL name (e.g. <span class="mono">PL-WAW-...-FSNONE</span>).<br>
+          2) Paste ranges like <span class="mono">(191.325 - 191.3625):(192.7375 - 192.7500)</span>.<br>
+          3) Click <em>Add</em>. Repeat for more OELs.<br>
+          4) Open <em>Table</em> or <em>Chart</em>, or <em>Download Excel</em>.
+        </span>
+      </h1>
+      <p>A minimal tool to merge OEL passbands into a 12.5&nbsp;GHz grid and visualize occupancy.</p>
     </hgroup>
 
     {% if flash %}
@@ -19,29 +54,44 @@
     {% endif %}
 
     <article>
-      <h3>Body of programm</h3>
+      <h3>Input</h3>
       <form action="/add_oel" method="post">
-        <label>OEL Name
-          <input type="text" name="name" placeholder="PL-WAW-...-FSNONE" required>
+        <label>
+          OEL Name
+          <input type="text" name="name" placeholder="PL-WAW-...-FSNONE" required
+                 title="Any identifier for the OEL / device / path this passband refers to.">
+          <small>Human-readable identifier for this OEL (site/path/module).</small>
         </label>
-        <label>Last Available Frequenct Range [Thz]
-          <textarea name="passband" rows="3" placeholder="(191.325 - 191.3625):(192.7375 - 192.7500):(196.0625 - 196.1250)" required></textarea>
+
+        <label>
+          Last Available Frequency Range [THz]
+          <textarea name="passband" rows="3"
+            placeholder="(191.325 - 191.3625):(192.7375 - 192.7500):(196.0625 - 196.1250)"
+            required
+            title="Format: one or more ranges in THz, each as (start - end), separated by colons ':'">
+          </textarea>
+          <small>
+            Format: <span class="mono">(start - end):(start - end)</span>. Units in THz.
+            Example: <span class="mono">(191.325 - 191.3625):(192.7375 - 192.7500)</span>.
+          </small>
         </label>
+
         <div class="grid">
-          <button type="submit">Добавить</button>
-          <a role="button" class="secondary" href="/reset">Сбросить список</a>
-          <a role="button" class="contrast" target="_blank" href="/summary">Открыть таблицу</a>
-          <a role="button" class="contrast" target="_blank" href="/chart">Показать график</a>
-          <a role="button" href="/download_excel">Скачать Excel</a>
+          <button type="submit" title="Add this OEL and its ranges to the working set">Add</button>
+          <a role="button" class="secondary" href="/reset" title="Clear all OELs and ranges from the working set">Reset list</a>
+          <a role="button" class="contrast" target="_blank" href="/summary" title="Open the FREE / IN USE 12.5 GHz grid table">Open table</a>
+          <a role="button" class="contrast" target="_blank" href="/chart" title="View a color chart of occupied vs free slices">Show chart</a>
+          <a role="button" href="/download_excel" title="Export the merged grid as an Excel workbook">Download Excel</a>
         </div>
       </form>
-      <p class="mono">Добавлено OEL: {{ oels_len }} • Количество интервалов: {{ grid_size }}</p>
+
+      <p class="mono">OELs added: {{ oels_len }} • Grid slices: {{ grid_size }}</p>
     </article>
 
     {% if oels_len %}
     <article>
       <details>
-        <summary>Текущие OEL</summary>
+        <summary>Current OELs</summary>
         <ul>
           {% for o in oels %}
             <li><strong>{{ o.name }}</strong>: <span class="mono">{{ o.ranges }}</span></li>
@@ -50,6 +100,18 @@
       </details>
     </article>
     {% endif %}
+
+    <article>
+      <details>
+        <summary>How it works (details)</summary>
+        <ul>
+          <li><strong>Parsing:</strong> the app parses each <span class="mono">(start - end)</span> THz range you provide.</li>
+          <li><strong>Gridding:</strong> ranges are projected onto a 12.5&nbsp;GHz grid from 191.325&nbsp;THz to 196.125&nbsp;THz.</li>
+          <li><strong>Merging:</strong> overlaps across different OELs are merged to produce a final occupancy map.</li>
+          <li><strong>Outputs:</strong> summary table (FREE / IN&nbsp;USE), a visual chart, and an Excel export.</li>
+        </ul>
+      </details>
+    </article>
 
     <footer><small>© kartemev</small></footer>
   </main>
